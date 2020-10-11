@@ -1,43 +1,31 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 
-class Weather extends Component {
-
-  constructor(props) {
-    super(props);
-    console.log('Constructor');
-    this.loadWeather = this
-      .loadWeather
-      .bind(this);
-    this.showWeather = this.showWeather.bind(this);
-    this.state = {
-      region: '',
-      temp: '',
-      press: '',
-      humid: '',
-      wind: '',
-      img: ''
+function Weather(props) {
+  const [region,
+    setRegion] = useState('');
+  const [temp,
+    setTemp] = useState('');
+  const [press,
+    setPress] = useState('');
+  const [humid,
+    setHumid] = useState('');
+  const [wind,
+    setWind] = useState('');
+  const [img,
+    setImg] = useState('');
+  
+  // componentDidMount, componentDidUpdate
+  // componentWillUnmount
+  useEffect(() => {
+    console.log("Effect");
+    loadWeather();
+    return function clear() {
+      console.log('Clear some data');
     }
-  }
+  }, []);
 
-  componentWillUnmount() {
-    console.log("Component will unmount");
-  }
-
-  // componentWillMount() {   console.log('Component Will Mount') }
-
-  componentDidMount() {
-    console.log("Component Did Mount");
-    this.loadWeather();
-  }
-
-  // componentWillUpdate() {   console.log("Component will update"); }
-
-  componentDidUpdate() {
-    console.log("Component did update");
-  }
-
-  loadWeather() {
+  const loadWeather = () => {
     navigator
       .geolocation
       .getCurrentPosition(position => {
@@ -45,51 +33,46 @@ class Weather extends Component {
         fetch(url)
           .then(r => r.json())
           .then(json => {
-            this.showWeather(json);
+            showWeather(json);
           });
       });
   }
 
-  showWeather(json) {
+  const showWeather = (json) => {
     console.dir(json);
-    this.setState({
-      region: json.name,
-      temp: json.main.temp,
-      press: json.main.pressure,
-      humid: json.main.humidity,
-      wind: json.wind.speed,
-      img: `http://openweathermap.org/img/wn/${json.weather[0].icon}@2x.png` 
-    });
+    setRegion(json.name);
+    setImg("http://openweathermap.org/img/wn/" + json.weather[0].icon + "@2x.png");
+    setTemp(json.main.temp);
+    setPress(json.main.pressure);
+    setHumid(json.main.humidity);
+    setWind(json.wind.speed);
   }
 
-  render() {
-    console.log('Component render()')
-    return (
-      <div className='App-header'>
-        <h2>{this.state.region}</h2>
-        <img src={this.state.img} alt='weather'/>
-        <table>
-          <thead>
-            <tr>
-              <th>Температура</th>
-              <th>Давление</th>
-              <th>Влажность</th>
-              <th>Скорость ветра</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{this.state.temp}</td>
-              <td>{this.state.press}</td>
-              <td>{this.state.humid}</td>
-              <td>{this.state.wind}</td>
-            </tr>
-          </tbody>
-        </table>
-        {/* <button onClick={this.loadWeather}>Load</button> */}
-      </div>
-    );
-  }
+  return (
+    <div className='App-header'>
+      <h2>{region}</h2>
+      <img src={img} alt='weather'/>
+      <table>
+        <thead>
+          <tr>
+            <th>Температура</th>
+            <th>Давление</th>
+            <th>Влажность</th>
+            <th>Скорость ветра</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{temp}</td>
+            <td>{press}</td>
+            <td>{humid}</td>
+            <td>{wind}</td>
+          </tr>
+        </tbody>
+      </table>
+      <button onClick={loadWeather}>Load</button>
+    </div>
+  );
 }
 
 function App() {
