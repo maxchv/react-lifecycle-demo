@@ -15,15 +15,20 @@ function Weather(props) {
   const [img,
     setImg] = useState('');
   
-  // componentDidMount, componentDidUpdate
-  // componentWillUnmount
+  // componentDidMount, componentDidUpdate  
   useEffect(() => {
-    console.log("Effect");
-    loadWeather();
-    return function clear() {
-      console.log('Clear some data');
-    }
+    // loadWeather();
   }, []);
+
+  useEffect(() => {
+    console.log("componentDidMount");
+    return () => console.log("componentWillUnmount");
+  }, []);
+  
+  useEffect(() => {
+    console.log('componentDidMount/componentDidUpdate');
+    return () => console.log("componentWillUpdate");
+  }, [region]);
 
   const loadWeather = () => {
     navigator
@@ -39,7 +44,7 @@ function Weather(props) {
   }
 
   const showWeather = (json) => {
-    console.dir(json);
+    // console.dir(json);
     setRegion(json.name);
     setImg("http://openweathermap.org/img/wn/" + json.weather[0].icon + "@2x.png");
     setTemp(json.main.temp);
